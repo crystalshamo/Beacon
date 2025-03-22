@@ -1,15 +1,19 @@
 package com.example.beacon.ui.dashboard;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.beacon.MapsActivity;
 import com.example.beacon.databinding.FragmentDashboardBinding;
 
 public class DashboardFragment extends Fragment {
@@ -26,6 +30,23 @@ public class DashboardFragment extends Fragment {
 
         final TextView textView = binding.textDashboard;
         dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+        EditText editName = binding.editName;
+        EditText editAddress = binding.editAddress;
+        Button btnGoToMap = binding.btnGoToMap;
+
+        btnGoToMap.setOnClickListener(v -> {
+            String name = editName.getText().toString().trim();
+            String address = editAddress.getText().toString().trim();
+
+            if (!name.isEmpty() && !address.isEmpty()) {
+                Intent intent = new Intent(getActivity(), MapsActivity.class);
+                intent.putExtra("name", name);
+                intent.putExtra("address", address);
+                startActivity(intent);
+            }
+        });
+
         return root;
     }
 
