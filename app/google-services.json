@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "44588696298",
+    "project_id": "beacon-f76d8",
+    "storage_bucket": "beacon-f76d8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:44588696298:android:70bd3d2ef1b21dc85acd93",
+        "android_client_info": {
+          "package_name": "com.example.beacon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6j-50IlNL9wD1gUY7RkW5syfu-3O8174"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
