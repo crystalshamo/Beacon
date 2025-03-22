@@ -11,8 +11,16 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.beacon.databinding.ActivityMainBinding;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+
+
 
 public class MainActivity extends AppCompatActivity {
+
+
+    FirebaseFirestore firestore;
+
 
     private ActivityMainBinding binding;
 
@@ -22,6 +30,10 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        firestore = FirebaseFirestore.getInstance();
+
+
 
         BottomNavigationView navView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
