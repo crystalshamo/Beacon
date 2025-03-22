@@ -1,4 +1,4 @@
-package com.example.beacon;
+package com.example.beacon.models;
 
 
 import java.util.ArrayList;

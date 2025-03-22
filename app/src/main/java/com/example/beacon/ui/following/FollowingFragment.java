@@ -1,4 +1,4 @@
-package com.example.beacon.ui.dashboard;
+package com.example.beacon.ui.following;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,27 +14,31 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.beacon.MapsActivity;
-import com.example.beacon.databinding.FragmentDashboardBinding;
+import com.example.beacon.databinding.FragmentFollowingBinding;
 
-public class DashboardFragment extends Fragment {
+public class FollowingFragment extends Fragment {
 
-    private FragmentDashboardBinding binding;
+    private FragmentFollowingBinding binding;
 
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        DashboardViewModel dashboardViewModel =
-                new ViewModelProvider(this).get(DashboardViewModel.class);
+        FollowingViewModel followingViewModel =
+                new ViewModelProvider(this).get(FollowingViewModel.class);
 
-        binding = FragmentDashboardBinding.inflate(inflater, container, false);
+        binding = FragmentFollowingBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textDashboard;
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        // Set text from ViewModel
+        final TextView textView = binding.textFollowing;
+        followingViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
+        // Get views
         EditText editName = binding.editName;
         EditText editAddress = binding.editAddress;
         Button btnGoToMap = binding.btnGoToMap;
 
+        // Set button click listener
         btnGoToMap.setOnClickListener(v -> {
             String name = editName.getText().toString().trim();
             String address = editAddress.getText().toString().trim();
