@@ -47,11 +47,13 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.play.services.maps)
     implementation(libs.activity)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-    implementation("com.github.prolificinteractive:material-calendarview:2.0.0") {
+    implementation("com.github.prolificinteractive:material-calendarview:2.0.1") {
         exclude(group = "com.android.support", module = "support-compat")
         exclude(group = "com.android.support", module = "support-v4")
     }
+
 }

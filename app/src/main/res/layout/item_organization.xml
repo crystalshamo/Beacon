@@ -34,10 +34,10 @@
         android:layout_height="wrap_content">
 
         <Button
-            android:id="@+id/btnEdit"
+            android:id="@+id/btnViewDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit" />
+            android:text="View" />
 
         <Button
             android:id="@+id/btnNeeds"
@@ -53,5 +53,4 @@
             android:layout_marginStart="8dp"
             android:text="Events" />
     </LinearLayout>
-
 </LinearLayout>

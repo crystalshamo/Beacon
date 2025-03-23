@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values/styles.xml -->
+<resources>
+    <!-- Custom text appearance for event dates -->
+    <style name="EventDateTextAppearance">
+        <item name="android:textColor">#FF0000</item> <!-- Red color -->
+        <item name="android:textSize">14sp</item>
+    </style>
+</resources>

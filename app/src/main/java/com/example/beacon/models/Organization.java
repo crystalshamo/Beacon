@@ -9,33 +9,40 @@ public class Organization {
     private String address;
     private String website;
     private String description;
-    private List<String> events;  // <-- ✅ FIXED
+    private double latitude; // Latitude field
+    private double longitude; // Longitude field
+    private List<String> events;
     private List<String> volunteer_opportunities;
     private List<String> needs;
-    private double latitude; // Latitude field
-    private double longitude;
 
+    // Default constructor required for Firestore
     public Organization() {
+        // Initialize empty lists
         this.events = new ArrayList<>();
         this.volunteer_opportunities = new ArrayList<>();
         this.needs = new ArrayList<>();
     }
 
-    public Organization(String name, String address, String website, String description) {
+    // Constructor with latitude and longitude
+    public Organization(String name, String address, String website, String description, double latitude, double longitude) {
         this.name = name;
         this.address = address;
         this.website = website;
         this.description = description;
+        this.latitude = latitude; // Set latitude
+        this.longitude = longitude; // Set longitude
+        // Initialize empty lists
         this.events = new ArrayList<>();
         this.volunteer_opportunities = new ArrayList<>();
         this.needs = new ArrayList<>();
     }
 
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
-
+    // Getters and setters (required for Firestore)
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
 
     public String getAddress() { return address; }
     public void setAddress(String address) { this.address = address; }
@@ -46,25 +53,19 @@ public class Organization {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public List<String> getEvents() {
-        return events;
-    }
+    public List<String> getEvents() { return events; }
+    public void setEvents(List<String> events) { this.events = events; }
 
-    public void setEvents(List<String> events) {
-        this.events = events;
-    }
+    public List<String> getVolunteerOpportunities() { return volunteer_opportunities; }
+    public void setVolunteerOpportunities(List<String> volunteer_opportunities) { this.volunteer_opportunities = volunteer_opportunities; }
+
     public List<String> getNeeds() { return needs; }
     public void setNeeds(List<String> needs) { this.needs = needs; }
 
-    public List<String> getVolunteerOpportunities() { return volunteer_opportunities; }
-    public void setVolunteerOpportunities(List<String> volunteer_opportunities) {
-        this.volunteer_opportunities = volunteer_opportunities;
-    }
-
+    // Getters and setters for latitude and longitude
     public double getLatitude() { return latitude; }
     public void setLatitude(double latitude) { this.latitude = latitude; }
 
     public double getLongitude() { return longitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
 }
-

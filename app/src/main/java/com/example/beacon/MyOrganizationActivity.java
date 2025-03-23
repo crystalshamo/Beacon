@@ -1,5 +1,7 @@
 package com.example.beacon;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +26,7 @@ public class MyOrganizationActivity extends AppCompatActivity {
 
     private ListView listView;
     private List<Organization> orgList = new ArrayList<>();
-    private OrganizationAdapter adapter;
+    private MyOrganizationAdapter2 adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +36,7 @@ public class MyOrganizationActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fabAddOrganization);
 
         listView = findViewById(R.id.listOrganizations);
-        adapter = new OrganizationAdapter(this, orgList);
+        adapter = new MyOrganizationAdapter2(this, orgList);
         listView.setAdapter(adapter);
 
         fab.setOnClickListener(view -> showAddOrganizationDialog());
@@ -65,48 +68,62 @@ public class MyOrganizationActivity extends AppCompatActivity {
                 return;
             }
 
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            Geocoder geocoder = new Geocoder(MyOrganizationActivity.this);
+            try {
+                List<Address> addresses = geocoder.getFromLocationName(address, 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    Address location = addresses.get(0);
+                    double latitude = location.getLatitude();
+                    double longitude = location.getLongitude();
 
-            // Step 1: Create an Event object from the same org info
-            Event defaultEvent = new Event(
-                    "Welcome Event",
-                    "Kickoff for " + name,
-                    "TBD", "TBD", address
-            );
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-            // Step 2: Save the default event to the "events" collection and get its ID
-            db.collection("events")
-                    .add(defaultEvent)
-                    .addOnSuccessListener(eventRef -> {
-                        String eventId = eventRef.getId(); // Get the event ID
+                    // Step 1: Create a default event
+                    Event defaultEvent = new Event(
+                            "Welcome Event",
+                            "Kickoff for " + name,
+                            "TBD", "TBD", address
+                    );
 
-                        // Step 3: Create organization and attach the event ID
-                        Organization org = new Organization(name, address, website, description);
-                        List<String> events = new ArrayList<>();
-                        events.add(eventId); // Store the event ID
-                        org.setEvents(events);
-                        org.setNeeds(new ArrayList<>());
+                    // Step 2: Add event to Firestore
+                    db.collection("events")
+                            .add(defaultEvent)
+                            .addOnSuccessListener(eventRef -> {
+                                String eventId = eventRef.getId();
 
-                        // Step 4: Save organization to Firestore
-                        db.collection("organizations")
-                                .add(org)
-                                .addOnSuccessListener(documentReference -> {
-                                    String newOrgId = documentReference.getId();
-                                    org.setId(newOrgId);
-                                    orgList.add(org);
-                                    adapter.notifyDataSetChanged();
-                                    Toast.makeText(this, "Organization added!", Toast.LENGTH_SHORT).show();
-                                    dialog.dismiss();
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(this, "Failed to create organization", Toast.LENGTH_SHORT).show();
-                                });
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Failed to create default event.", Toast.LENGTH_SHORT).show();
-                    });
+                                // Step 3: Create the organization with full data
+                                Organization org = new Organization(name, address, website, description, latitude, longitude);
+                                List<String> events = new ArrayList<>();
+                                events.add(eventId);
+                                org.setEvents(events);
+                                org.setNeeds(new ArrayList<>());
+
+                                // Step 4: Save org to Firestore
+                                db.collection("organizations")
+                                        .add(org)
+                                        .addOnSuccessListener(documentRef -> {
+                                            org.setId(documentRef.getId());
+                                            orgList.add(org);
+                                            adapter.notifyDataSetChanged();
+                                            Toast.makeText(this, "Organization added!", Toast.LENGTH_SHORT).show();
+                                            dialog.dismiss();
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            Toast.makeText(this, "Failed to create organization", Toast.LENGTH_SHORT).show();
+                                        });
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Failed to create default event", Toast.LENGTH_SHORT).show();
+                            });
+                } else {
+                    Toast.makeText(this, "Address not found.", Toast.LENGTH_SHORT).show();
+                }
+            } catch (IOException e) {
+                Toast.makeText(this, "Geocoding failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
         });
     }
+
     private void loadOrganizations() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("organizations")
@@ -124,4 +141,5 @@ public class MyOrganizationActivity extends AppCompatActivity {
                     Toast.makeText(this, "Failed to load organizations.", Toast.LENGTH_SHORT).show();
                 });
     }
+
 }
