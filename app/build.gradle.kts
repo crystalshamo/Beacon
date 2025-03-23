@@ -56,5 +56,5 @@ dependencies {
         exclude(group = "com.android.support", module = "support-compat")
         exclude(group = "com.android.support", module = "support-v4")
     }
-
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
 }

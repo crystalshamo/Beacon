@@ -8,6 +8,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,22 +25,24 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.beacon.MapsActivity;
-import com.example.beacon.OrganizationAdapter;
+import com.example.beacon.AllEventsActivity;
 import com.example.beacon.R;
+import com.example.beacon.OrganizationAdapter;
 import com.example.beacon.databinding.FragmentExploreBinding;
 import com.example.beacon.databinding.DialogMapInputBinding;
 import com.example.beacon.models.Organization;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +55,11 @@ public class ExploreFragment extends Fragment {
     private List<Organization> organizationList;
     private GoogleMap googleMap;
     private SupportMapFragment mapFragment;
+    private Dialog dialog;
+    private boolean isFirstLocationUpdate = true;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -62,14 +70,16 @@ public class ExploreFragment extends Fragment {
         binding = FragmentExploreBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        // Initialize Firebase Auth
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+
         // Initialize RecyclerView
         recyclerView = binding.recyclerViewOrganizations;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Initialize the organization list
+        // Initialize organization list and adapter
         organizationList = new ArrayList<>();
-
-        // Set up the adapter
         adapter = new OrganizationAdapter(getContext(), organizationList);
         recyclerView.setAdapter(adapter);
 
@@ -79,72 +89,25 @@ public class ExploreFragment extends Fragment {
         // Initialize map fragment
         mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         if (mapFragment != null) {
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(GoogleMap googleMap) {
-                    // Store the GoogleMap instance
-                    ExploreFragment.this.googleMap = googleMap;
-
-                    // Center the map on Detroit
-                    LatLng detroit = new LatLng(42.3314, -83.0458); // Detroit's coordinates
-                    googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(detroit, 10)); // Zoom level can be adjusted
-
-                    // Check if permission is granted to show the user's current location
-                    if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-                        googleMap.setMyLocationEnabled(true);
-
-                        // Get the current location
-                        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
-                        fusedLocationClient.getLastLocation()
-                                .addOnSuccessListener(getActivity(), location -> {
-                                    if (location != null) {
-                                        // If the location is available, move the camera to the user's location
-                                        LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
-                                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));  // Adjust zoom level
-                                    } else {
-                                        // Handle case where location is null
-                                        Log.e("ExploreFragment", "Location is null");
-                                    }
-                                });
-                    } else {
-                        // Handle permission not granted scenario
-                        Log.e("ExploreFragment", "Location permission not granted");
-                    }
-                }
-            });
+            mapFragment.getMapAsync(this::initializeMap);
         }
 
-        // Set button click listener for opening the map input dialog
-        binding.btnMap.setOnClickListener(v -> showMapInputDialog());
-
-        // Set initial visibility when the app opens
-        binding.recyclerViewOrganizations.setVisibility(View.VISIBLE);  // Show RecyclerView
-        binding.mapContainer.setVisibility(View.GONE);  // Hide Map Container
-
-        // Toggle the visibility of map and RecyclerView based on switch state
-        binding.toggleView.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                // Show map and hide RecyclerView
-                binding.recyclerViewOrganizations.animate().alpha(0f).setDuration(300).withEndAction(() -> {
-                    binding.recyclerViewOrganizations.setVisibility(View.GONE);
-                }).start();
-                binding.mapContainer.setVisibility(View.VISIBLE);
-                binding.mapContainer.setAlpha(0f);
-                binding.mapContainer.animate().alpha(1f).setDuration(300).start();
-            } else {
-                // Hide map and show RecyclerView
-                binding.mapContainer.animate().alpha(0f).setDuration(300).withEndAction(() -> {
-                    binding.mapContainer.setVisibility(View.GONE);
-                }).start();
-                binding.recyclerViewOrganizations.setVisibility(View.VISIBLE);
-                binding.recyclerViewOrganizations.setAlpha(0f);
-                binding.recyclerViewOrganizations.animate().alpha(1f).setDuration(300).start();
-            }
+        binding.btnEvents.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), AllEventsActivity.class);
+            startActivity(intent);
         });
 
-        // Initialize search input and add TextWatcher
+        // Set initial view visibility
+        binding.recyclerViewOrganizations.setVisibility(View.VISIBLE);
+        binding.mapContainer.setVisibility(View.GONE);
+
+        // Toggle between map and RecyclerView
+        binding.toggleView.setOnCheckedChangeListener((buttonView, isChecked) -> toggleView(isChecked));
+
+        // Initialize search input
         EditText searchInput = binding.searchInput;
+        filterOrganizations(""); // Show all initially
+
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -161,139 +124,218 @@ public class ExploreFragment extends Fragment {
         return root;
     }
 
-    private void loadOrganizations() {
-        // Get the Firestore instance
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Reference to the "organizations" collection in Firestore
+
+    private void checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Request location permission
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            // Permission already granted, enable location features
+            if (googleMap != null) {
+                try {
+                    googleMap.setMyLocationEnabled(true);
+                    setCurrentLocation();
+                } catch (SecurityException e) {
+                    Log.e("ExploreFragment", "SecurityException: Location permission denied", e);
+                    Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, enable location features
+                if (googleMap != null) {
+                    try {
+                        googleMap.setMyLocationEnabled(true);
+                        setCurrentLocation();
+                    } catch (SecurityException e) {
+                        Log.e("ExploreFragment", "SecurityException: Location permission denied", e);
+                        Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            } else {
+                // Permission denied, show a message to the user
+                Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void initializeMap(GoogleMap googleMap) {
+        this.googleMap = googleMap;
+
+        // Set the camera to Detroit (42.3314, -83.0458)
+        LatLng detroit = new LatLng(42.3314, -83.0458);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(detroit, 10)); // Zoom level 10
+
+        // Enable location layer if permission is granted
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            try {
+                googleMap.setMyLocationEnabled(true); // Optional: Enable the location layer
+            } catch (SecurityException e) {
+                Log.e("ExploreFragment", "SecurityException: Location permission denied", e);
+                Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // Request location permission if not granted
+            checkLocationPermission();
+        }
+
+        // Set marker click listener
+        googleMap.setOnMarkerClickListener(marker -> {
+            Organization org = (Organization) marker.getTag();
+            if (org != null) {
+                showOrganizationInfoDialog(org.getName(), org.getAddress(), org.getWebsite(), org.getDescription());
+            }
+            return true;
+        });
+    }
+
+    private void setCurrentLocation() {
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
+        // Check if location permission is granted
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            try {
+                // Request the last known location
+                fusedLocationClient.getLastLocation()
+                        .addOnSuccessListener(requireActivity(), location -> {
+                            if (location != null && isFirstLocationUpdate) {
+                                // Use the last known location
+                                LatLng currentLocation = new LatLng(location.getLatitude(), location.getLongitude());
+                                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
+                                isFirstLocationUpdate = false; // Prevent further updates
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("ExploreFragment", "Failed to get location", e);
+                            Toast.makeText(getContext(), "Failed to get location", Toast.LENGTH_SHORT).show();
+                        });
+            } catch (SecurityException e) {
+                // Handle SecurityException (permission denied)
+                Log.e("ExploreFragment", "SecurityException: Location permission denied", e);
+                Toast.makeText(getContext(), "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            // Permission not granted, log an error or request permission
+            Log.e("ExploreFragment", "Location permission not granted");
+            Toast.makeText(getContext(), "Location permission not granted", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void toggleView(boolean showMap) {
+        if (showMap) {
+            binding.recyclerViewOrganizations.animate().alpha(0f).setDuration(300).withEndAction(() -> {
+                binding.recyclerViewOrganizations.setVisibility(View.GONE);
+            }).start();
+            binding.mapContainer.setVisibility(View.VISIBLE);
+            binding.mapContainer.setAlpha(0f);
+            binding.mapContainer.animate().alpha(1f).setDuration(300).start();
+        } else {
+            binding.mapContainer.animate().alpha(0f).setDuration(300).withEndAction(() -> {
+                binding.mapContainer.setVisibility(View.GONE);
+            }).start();
+            binding.recyclerViewOrganizations.setVisibility(View.VISIBLE);
+            binding.recyclerViewOrganizations.setAlpha(0f);
+            binding.recyclerViewOrganizations.animate().alpha(1f).setDuration(300).start();
+        }
+    }
+
+    private void loadOrganizations() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("organizations")
                 .get()
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Clear the current list to avoid duplicates
+                    if (task.isSuccessful() && task.getResult() != null) {
                         organizationList.clear();
-
-                        // Loop through each document in the collection
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            // Create a new Organization object for each document
                             String name = document.getString("name");
                             String address = document.getString("address");
                             String website = document.getString("website");
                             String description = document.getString("description");
+                            String userId = document.getString("userId");
                             Double latitude = document.getDouble("latitude");
                             Double longitude = document.getDouble("longitude");
+                            String id = document.getId();
 
-                            // Handle null values in Firestore fields
                             if (latitude == null || longitude == null) {
-                                latitude = 0.0;  // Default to a safe value
-                                longitude = 0.0; // Default to a safe value
+                                latitude = 0.0;
+                                longitude = 0.0;
                             }
 
-                            // Create Organization object and add it to the list
-                            Organization organization = new Organization(name, address, website, description, latitude, longitude, null);
+                            Organization organization = new Organization(name, address, website, description, latitude, longitude, userId, id);
                             organizationList.add(organization);
 
-                            // Add a marker on the map for each organization
                             if (googleMap != null) {
                                 LatLng orgLocation = new LatLng(latitude, longitude);
-                                MarkerOptions markerOptions = new MarkerOptions()
+                                Marker marker = googleMap.addMarker(new MarkerOptions()
                                         .position(orgLocation)
                                         .title(name)
-                                        .snippet(address); // Displaying address as a snippet
-                                googleMap.addMarker(markerOptions);
-
-                                // Set a click listener on the marker
-                                googleMap.setOnMarkerClickListener(marker -> {
-                                    // Show more information when a marker is clicked
-                                    showOrganizationInfoDialog(marker.getTitle(), marker.getSnippet());
-                                    return true;
-                                });
+                                        .snippet(address));
+                                marker.setTag(organization);
                             }
                         }
 
-                        // Notify the adapter that the data has changed
+                        adapter.setOrganizations(organizationList);
                         adapter.notifyDataSetChanged();
+                        filterOrganizations("");
                     } else {
-                        // Handle the error if the Firestore query fails
-                        Log.w("ExploreFragment", "Error getting documents.", task.getException());
+                        Log.e("ExploreFragment", "Error loading organizations", task.getException());
+                        Toast.makeText(getContext(), "Failed to load organizations", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void showOrganizationInfoDialog(String name, String address) {
-        Dialog dialog = new Dialog(requireContext());
+    private void showOrganizationInfoDialog(String name, String address, String website, String description) {
+        dialog = new Dialog(requireContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        // Inflate the dialog layout
         DialogMapInputBinding dialogBinding = DialogMapInputBinding.inflate(getLayoutInflater());
         dialog.setContentView(dialogBinding.getRoot());
 
-        // Set the text for the dialog (you can modify this part to add other details like website and description)
-        dialogBinding.editPopupName.setText(name);
-        dialogBinding.editPopupAddress.setText(address);
-
-        // Show the dialog
-        dialog.show();
-    }
-
-    private void showMapInputDialog() {
-        // Create and display the map input dialog
-        Dialog dialog = new Dialog(requireContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-        // Inflate dialog layout using View Binding
-        DialogMapInputBinding dialogBinding = DialogMapInputBinding.inflate(getLayoutInflater());
-        dialog.setContentView(dialogBinding.getRoot());
-
-        // Handle button click inside the dialog
-        dialogBinding.btnPopupGoToMap.setOnClickListener(v -> {
-            String name = dialogBinding.editPopupName.getText().toString().trim();
-            String address = dialogBinding.editPopupAddress.getText().toString().trim();
-
-            // Validate name and address fields
-            if (!name.isEmpty() && !address.isEmpty() && address.length() > 5) {
-                Intent intent = new Intent(getActivity(), MapsActivity.class);
-                intent.putExtra("name", name);
-                intent.putExtra("address", address);
-                startActivity(intent);
-                dialog.dismiss(); // Close the popup dialog
-            } else {
-                // Show a Toast or alert that the fields are invalid
-                Toast.makeText(getContext(), "Please enter valid name and address.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        dialogBinding.orgName.setText(name);
+        dialogBinding.orgAddress.setText(address);
+        dialogBinding.orgWebsite.setText(website);
+        dialogBinding.orgDescription.setText(description);
+        dialogBinding.orgWebsite.setMovementMethod(LinkMovementMethod.getInstance());
 
         dialog.show();
     }
 
     private void filterOrganizations(String query) {
         List<Organization> filteredList = new ArrayList<>();
-
         if (query.isEmpty()) {
-            // If the query is empty, show the full list
             filteredList.addAll(organizationList);
         } else {
-            // Filter the list based on the query
             for (Organization organization : organizationList) {
                 if (organization.getName().toLowerCase().contains(query.toLowerCase())) {
                     filteredList.add(organization);
                 }
             }
         }
-
-        // Update the adapter with the filtered list
         adapter.setOrganizations(filteredList);
         adapter.notifyDataSetChanged();
-
-        // Show a message if no results are found
-        if (filteredList.isEmpty()) {
-            Toast.makeText(getContext(), "No organizations found", Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        if (googleMap != null) {
+            googleMap.clear();
+            googleMap = null;
+        }
+        if (dialog != null && dialog.isShowing()) {
+            dialog.dismiss();
+        }
         binding = null;
     }
 }

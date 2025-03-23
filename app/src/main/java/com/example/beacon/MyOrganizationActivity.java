@@ -13,7 +13,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.beacon.models.Event;
 import com.example.beacon.models.Organization;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,7 +27,6 @@ import java.util.List;
 public class MyOrganizationActivity extends AppCompatActivity {
     FirebaseAuth auth = FirebaseAuth.getInstance();
     FirebaseUser user = auth.getCurrentUser();
-
 
     private ListView listView;
     private List<Organization> orgList = new ArrayList<>();
@@ -58,6 +56,7 @@ public class MyOrganizationActivity extends AppCompatActivity {
         } else {
             Log.d("FirebaseAuth", "No user is logged in");
         }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_organization, null);
         builder.setView(dialogView);
@@ -91,45 +90,24 @@ public class MyOrganizationActivity extends AppCompatActivity {
 
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                    // Step 1: Create a default event
-                    Event defaultEvent = new Event(
-                            "Welcome Event",
-                            "Kickoff for " + name,
-                            "TBD", "TBD", address
-                    );
+                    String orgId = db.collection("organizations").document().getId();
+                    String userId = user.getUid();
+                    Organization org = new Organization(name, address, website, description, latitude, longitude, userId, orgId);
+                    org.setEvents(new ArrayList<>());
+                    org.setNeeds(new ArrayList<>());
 
-                    // Step 2: Add event to Firestore
-                    db.collection("events")
-                            .add(defaultEvent)
-                            .addOnSuccessListener(eventRef -> {
-                                String eventId = eventRef.getId();
+                    db.collection("organizations")
+                            .document(orgId)
+                            .set(org)
+                            .addOnSuccessListener(documentRef -> {
 
-                                    String userId = user.getUid(); // Get the unique user ID
-                                    Log.d("FirebaseAuth", "Logged-in user ID: " + userId);
-
-                                // Step 3: Create the organization with full data
-                                Organization org = new Organization(name, address, website, description, latitude, longitude, userId);
-                                List<String> events = new ArrayList<>();
-                                events.add(eventId);
-                                org.setEvents(events);
-                                org.setNeeds(new ArrayList<>());
-
-                                // Step 4: Save org to Firestore
-                                db.collection("organizations")
-                                        .add(org)
-                                        .addOnSuccessListener(documentRef -> {
-                                            org.setId(documentRef.getId());
-                                            orgList.add(org);
-                                            adapter.notifyDataSetChanged();
-                                            Toast.makeText(this, "Organization added!", Toast.LENGTH_SHORT).show();
-                                            dialog.dismiss();
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            Toast.makeText(this, "Failed to create organization", Toast.LENGTH_SHORT).show();
-                                        });
+                                orgList.add(org);
+                                adapter.notifyDataSetChanged();
+                                Toast.makeText(this, "Organization added!", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
                             })
                             .addOnFailureListener(e -> {
-                                Toast.makeText(this, "Failed to create default event", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(this, "Failed to create organization", Toast.LENGTH_SHORT).show();
                             });
                 } else {
                     Toast.makeText(this, "Address not found.", Toast.LENGTH_SHORT).show();
@@ -142,20 +120,24 @@ public class MyOrganizationActivity extends AppCompatActivity {
 
     private void loadOrganizations() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("organizations")
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    orgList.clear();
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        Organization org = doc.toObject(Organization.class);
-                        org.setId(doc.getId()); // Store the Firestore document ID
-                        orgList.add(org);
-                    }
-                    adapter.notifyDataSetChanged();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to load organizations.", Toast.LENGTH_SHORT).show();
-                });
-    }
+        if (user != null) {
+            String userId = user.getUid();
 
+            db.collection("organizations")
+                    .whereEqualTo("userId", userId)
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        orgList.clear();
+                        for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                            Organization org = doc.toObject(Organization.class);
+                            org.setId(doc.getId());
+                            orgList.add(org);
+                        }
+                        adapter.notifyDataSetChanged();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Failed to load your organizations.", Toast.LENGTH_SHORT).show();
+                    });
+        }
+    }
 }

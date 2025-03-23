@@ -48,26 +48,37 @@
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!-- Button to view the map -->
-    <Button
-        android:id="@+id/btnMap"
+    <!-- Buttons Row -->
+    <LinearLayout
+        android:id="@+id/linearlayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
+        android:orientation="horizontal"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:elevation="4dp"
-        android:fontFamily="sans-serif-medium"
-        android:padding="12dp"
-        android:text="View Map"
-        android:textAllCaps="false"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/searchContainer"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/searchContainer" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+        <!-- Button to view events -->
+        <Button
+            android:id="@+id/btnEvents"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:elevation="4dp"
+            android:fontFamily="sans-serif-medium"
+            android:padding="12dp"
+            android:text="Events"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
 
     <!-- Switch to toggle between views -->
+
+    <!-- RecyclerView to display organizations -->
     <Switch
         android:id="@+id/toggleView"
         android:layout_width="wrap_content"
@@ -79,20 +90,20 @@
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnMap" />
+        app:layout_constraintTop_toBottomOf="@id/linearlayout"
+        app:layout_constraintVertical_bias="1.0" />
 
-    <!-- RecyclerView to display organizations -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewOrganizations"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="370dp"
+        android:layout_height="523dp"
         android:layout_marginTop="16dp"
         android:clipToPadding="false"
         android:paddingBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toggleView" />
+        app:layout_constraintTop_toBottomOf="@id/linearlayout" />
 
     <!-- Map Fragment container with a border -->
     <FrameLayout

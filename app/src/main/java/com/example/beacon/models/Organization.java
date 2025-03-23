@@ -25,7 +25,8 @@ public class Organization {
     }
 
     // Constructor with userId, latitude, and longitude
-    public Organization(String name, String address, String website, String description, double latitude, double longitude, String userId) {
+    public Organization(String name, String address, String website, String description, double latitude, double longitude, String userId, String id) {
+        this.id = id;
         this.name = name;
         this.address = address;
         this.website = website;
