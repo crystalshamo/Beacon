@@ -22,12 +22,6 @@
             android:hint="Address" />
 
         <EditText
-            android:id="@+id/editWebsite"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Website" />
-
-        <EditText
             android:id="@+id/editDescription"
             android:layout_width="match_parent"
             android:layout_height="120dp"

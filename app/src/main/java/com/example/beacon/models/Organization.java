@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Organization {
-    private String id;
     private String name;
     private String address;
     private String website;
@@ -36,9 +35,6 @@ public class Organization {
         this.volunteer_opportunities = new ArrayList<>();
         this.needs = new ArrayList<>();
     }
-
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
 
     // Getters and setters (required for Firestore)
     public String getName() { return name; }
