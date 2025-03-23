@@ -1,41 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     tools:context=".ui.account.AccountFragment">
 
-    <TextView
-        android:id="@+id/text_Account"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <Button
-        android:id="@+id/btnMyEvents"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="My Events"
-        android:layout_marginTop="8dp" />
+        <!-- 🔹 Calendar Header (Month and Arrows) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp">
 
+            <Button
+                android:id="@+id/prevMonthButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:text="&lt;" />
 
-    <Button
-        android:id="@+id/btnMyOrganization"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="My Organization"
-        app:layout_constraintTop_toBottomOf="@id/text_Account"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="24dp" />
+            <TextView
+                android:id="@+id/monthYearTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="March 2025"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginHorizontal="16dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:id="@+id/nextMonthButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:text="&gt;" />
+        </LinearLayout>
+
+        <!-- 🔹 Days of Week Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView android:text="Sun" style="@style/WeekdayCell"/>
+            <TextView android:text="Mon" style="@style/WeekdayCell"/>
+            <TextView android:text="Tue" style="@style/WeekdayCell"/>
+            <TextView android:text="Wed" style="@style/WeekdayCell"/>
+            <TextView android:text="Thu" style="@style/WeekdayCell"/>
+            <TextView android:text="Fri" style="@style/WeekdayCell"/>
+            <TextView android:text="Sat" style="@style/WeekdayCell"/>
+        </LinearLayout>
+
+        <!-- 🔹 Calendar Grid -->
+        <GridView
+            android:id="@+id/calendarGridView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:numColumns="7"
+            android:verticalSpacing="8dp"
+            android:horizontalSpacing="8dp"
+            android:padding="8dp"
+            android:stretchMode="columnWidth"
+            android:isScrollContainer="false" />
+
+        <!-- 🔹 Event Details Card -->
+        <LinearLayout
+            android:id="@+id/eventDetailsCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/event_details_background"
+            android:padding="16dp"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:id="@+id/eventDetailsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No events for this date"
+                android:gravity="center"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginTop="8dp">
+
+                <Button
+                    android:id="@+id/prevEventButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="←"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/nextEventButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="→"
+                    android:layout_marginStart="16dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- 🔹 Extra Button -->
+        <Button
+            android:id="@+id/btnMyOrganization"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="My Organizations"
+            android:textSize="15sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp" />
+    </LinearLayout>
+</ScrollView>

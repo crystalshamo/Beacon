@@ -80,7 +80,7 @@ public class ExploreFragment extends Fragment {
 
         // Initialize organization list and adapter
         organizationList = new ArrayList<>();
-        adapter = new OrganizationAdapter(getContext(), organizationList);
+        adapter = new OrganizationAdapter(getContext(), organizationList, true, false);
         recyclerView.setAdapter(adapter);
 
         // Load organizations from Firestore
