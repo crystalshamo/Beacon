@@ -33,24 +33,6 @@ public class FollowingFragment extends Fragment {
         final TextView textView = binding.textFollowing;
         followingViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
 
-        // Get views
-        EditText editName = binding.editName;
-        EditText editAddress = binding.editAddress;
-        Button btnGoToMap = binding.btnGoToMap;
-
-        // Set button click listener
-        btnGoToMap.setOnClickListener(v -> {
-            String name = editName.getText().toString().trim();
-            String address = editAddress.getText().toString().trim();
-
-            if (!name.isEmpty() && !address.isEmpty()) {
-                Intent intent = new Intent(getActivity(), MapsActivity.class);
-                intent.putExtra("name", name);
-                intent.putExtra("address", address);
-                startActivity(intent);
-            }
-        });
-
         return root;
     }
 
