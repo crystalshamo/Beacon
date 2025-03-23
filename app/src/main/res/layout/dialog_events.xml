@@ -1,0 +1,59 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="20dp"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/eventDialogTitle"
+        android:text="Events"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <!-- List of events -->
+    <ListView
+        android:id="@+id/eventListView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp" />
+
+    <!-- Add Event Fields -->
+    <EditText
+        android:id="@+id/inputEventName"
+        android:hint="Event Name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/inputEventDesc"
+        android:hint="Description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/inputEventDate"
+        android:hint="Date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/inputEventTime"
+        android:hint="Time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/inputEventLocation"
+        android:hint="Location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <!-- Add Button -->
+    <Button
+        android:id="@+id/btnAddEvent"
+        android:text="Add Event"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
