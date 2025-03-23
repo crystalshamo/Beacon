@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "44588696298",
+    "firebase_url": "https://beacon-f76d8-default-rtdb.firebaseio.com",
     "project_id": "beacon-f76d8",
     "storage_bucket": "beacon-f76d8.firebasestorage.app"
   },

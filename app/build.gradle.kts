@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.example.beacon"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.beacon"
-        minSdk = 33
-        targetSdk = 34
+        minSdk = 35
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -26,17 +26,27 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     buildFeatures {
         viewBinding = true
     }
 }
 
 dependencies {
+    // Firebase BOM declaration
+    implementation(platform("com.google.firebase:firebase-bom:30.3.0"))
 
+    // Firebase dependencies
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-database")
+
+    // Other dependencies
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
@@ -44,7 +54,8 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
-    implementation(libs.firebase.firestore)
+    implementation(libs.activity)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

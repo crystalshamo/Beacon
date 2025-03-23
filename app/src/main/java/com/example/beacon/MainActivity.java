@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        //setContentView(R.layout.activity_welcome_page);
         firestore = FirebaseFirestore.getInstance();
 
 
