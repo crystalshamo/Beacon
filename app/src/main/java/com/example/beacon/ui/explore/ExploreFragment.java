@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -26,8 +25,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.beacon.AllEventsActivity;
-import com.example.beacon.R;
 import com.example.beacon.OrganizationAdapter;
+import com.example.beacon.R;
 import com.example.beacon.databinding.FragmentExploreBinding;
 import com.example.beacon.databinding.DialogMapInputBinding;
 import com.example.beacon.models.Organization;

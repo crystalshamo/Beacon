@@ -38,7 +38,7 @@
 
         <activity android:name=".NeedsActivity" />
         <activity android:name=".AllEventsActivity" />
-        <activity android:name=".MyEventActivity" />
+        <activity android:name=".orgDetailsActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

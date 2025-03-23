@@ -50,12 +50,21 @@
                 android:text="View Details"
                 android:layout_marginEnd="8dp"/>
 
+            <Button
+                android:id="@+id/btnRequest"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/request_icon"
+                android:contentDescription="Volunteer Button"
+                android:layout_marginEnd="8dp"
+                android:layout_gravity="bottom"/>
 
             <Button
                 android:id="@+id/btnSave"
                 android:layout_width="35dp"
                 android:layout_height="35dp"
-                android:background="@drawable/baseline_star_24"
+                android:background="@drawable/btn_save_selector"
                 android:layout_marginTop="0dp"
                 android:layout_marginEnd="0dp"
                 android:layout_marginStart="140dp"/>
