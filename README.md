@@ -27,6 +27,9 @@ Many community organizations rely on social media to share events and resources,
 ## Future Enhancements  
 - **Push Notifications** – Alerts for event updates and new opportunities  
 - **Recurring Event Support** – Automating weekly/monthly events  
-- **Social Features** – Photo sharing, user badges, and event highlights  
+- **Social Features** – Photo sharing, user badges, and event highlights
+
+## Demo  
+ [Watch the Demo](https://youtu.be/4cmGu9AgLsQ)
 
 Beacon makes it easier than ever to get involved in your community and support local initiatives!
