@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -59,6 +60,7 @@ public class ExploreFragment extends Fragment {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
+    private ToggleButton ToggleView;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -231,7 +233,6 @@ public class ExploreFragment extends Fragment {
             Toast.makeText(getContext(), "Location permission not granted", Toast.LENGTH_SHORT).show();
         }
     }
-
     private void toggleView(boolean showMap) {
         if (showMap) {
             binding.recyclerViewOrganizations.animate().alpha(0f).setDuration(300).withEndAction(() -> {
@@ -241,6 +242,9 @@ public class ExploreFragment extends Fragment {
             binding.mapContainer.setAlpha(0f);
             binding.mapContainer.animate().alpha(1f).setDuration(300).start();
         } else {
+            if (googleMap != null) {
+                googleMap.clear(); // Clear markers when hiding the map view
+            }
             binding.mapContainer.animate().alpha(0f).setDuration(300).withEndAction(() -> {
                 binding.mapContainer.setVisibility(View.GONE);
             }).start();
@@ -279,62 +283,62 @@ public class ExploreFragment extends Fragment {
                                 LatLng orgLocation = new LatLng(latitude, longitude);
                                 Marker marker = googleMap.addMarker(new MarkerOptions()
                                         .position(orgLocation)
-                                        .title(name)
-                                        .snippet(address));
-                                marker.setTag(organization);
+                                        .title(name));
+                                marker.setTag(organization); // Attach organization to the marker
                             }
                         }
-
-                        adapter.setOrganizations(organizationList);
                         adapter.notifyDataSetChanged();
-                        filterOrganizations("");
                     } else {
-                        Log.e("ExploreFragment", "Error loading organizations", task.getException());
-                        Toast.makeText(getContext(), "Failed to load organizations", Toast.LENGTH_SHORT).show();
+                        Log.w("ExploreFragment", "Error getting documents.", task.getException());
                     }
                 });
     }
 
+    private void filterOrganizations(String query) {
+        if (googleMap != null) {
+            googleMap.clear(); // Clear existing markers
+
+            List<Organization> filteredList = new ArrayList<>();
+            for (Organization organization : organizationList) {
+                if (organization.getName().toLowerCase().contains(query.toLowerCase())) {
+                    filteredList.add(organization);
+
+                    // Add marker to map for filtered organization
+                    LatLng orgLocation = new LatLng(organization.getLatitude(), organization.getLongitude());
+                    Marker marker = googleMap.addMarker(new MarkerOptions()
+                            .position(orgLocation)
+                            .title(organization.getName()));
+                    marker.setTag(organization); // Attach organization to the marker
+                }
+            }
+
+            // Update the list for RecyclerView
+            adapter.setOrganizations(filteredList);
+
+            // If map is visible, center on the first filtered organization
+            if (filteredList.size() > 0 && binding.toggleView.isChecked()) {
+                Organization firstOrg = filteredList.get(0);
+                LatLng firstOrgLocation = new LatLng(firstOrg.getLatitude(), firstOrg.getLongitude());
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstOrgLocation, 15)); // Move camera to first result
+            }
+        }
+    }
+
     private void showOrganizationInfoDialog(String name, String address, String website, String description) {
-        dialog = new Dialog(requireContext());
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // Show organization details in a dialog
         DialogMapInputBinding dialogBinding = DialogMapInputBinding.inflate(getLayoutInflater());
+        dialog = new Dialog(getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(dialogBinding.getRoot());
 
         dialogBinding.orgName.setText(name);
         dialogBinding.orgAddress.setText(address);
-        dialogBinding.orgWebsite.setText(website);
         dialogBinding.orgDescription.setText(description);
+        dialogBinding.orgWebsite.setText(website);
         dialogBinding.orgWebsite.setMovementMethod(LinkMovementMethod.getInstance());
 
+        dialogBinding.closeButton.setOnClickListener(v -> dialog.dismiss());
+
         dialog.show();
-    }
-
-    private void filterOrganizations(String query) {
-        List<Organization> filteredList = new ArrayList<>();
-        if (query.isEmpty()) {
-            filteredList.addAll(organizationList);
-        } else {
-            for (Organization organization : organizationList) {
-                if (organization.getName().toLowerCase().contains(query.toLowerCase())) {
-                    filteredList.add(organization);
-                }
-            }
-        }
-        adapter.setOrganizations(filteredList);
-        adapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (googleMap != null) {
-            googleMap.clear();
-            googleMap = null;
-        }
-        if (dialog != null && dialog.isShowing()) {
-            dialog.dismiss();
-        }
-        binding = null;
     }
 }

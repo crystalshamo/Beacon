@@ -33,6 +33,24 @@
                 android:textSize="36sp"
                 android:textStyle="bold" />
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/im"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="25dp"
+                app:cardCornerRadius="50dp"
+                app:cardElevation="10dp">
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="0dp"
+                    android:scaleType="centerCrop"
+                    app:srcCompat="@drawable/beacon" />
+            </androidx.cardview.widget.CardView>
+
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -95,7 +113,11 @@
                 android:padding="8dp"
                 android:layout_marginTop="10dp"
                 android:textColor="@color/colorOnSecondary"
-                android:textSize="18sp"/>
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:clickable="true"
+                android:focusable="true"
+                android:fontFamily="sans-serif-medium"/>
 
 
 
