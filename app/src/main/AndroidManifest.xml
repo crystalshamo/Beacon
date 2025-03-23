@@ -4,6 +4,8 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -15,15 +17,32 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Beacon"
         tools:targetApi="31">
+
+
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false" />
+
+
+        <activity
+            android:name=".SignUpActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".MyOrganizationActivity"
             android:exported="false" />
+
+        <activity android:name=".NeedsActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD7fhF98qH3A-FdRVAVgXRxo0_oY5F3pv0" />
 
-        <activity android:name=".NeedsActivity" />
+        <activity android:name=".EventDetailsActivity" />
 
         <activity
             android:name=".MapsActivity"

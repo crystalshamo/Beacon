@@ -11,6 +11,7 @@ public class Organization {
     private String description;
     private double latitude; // Latitude field
     private double longitude; // Longitude field
+    private String userId; // ID of the user who created the organization
     private List<String> events;
     private List<String> volunteer_opportunities;
     private List<String> needs;
@@ -23,14 +24,15 @@ public class Organization {
         this.needs = new ArrayList<>();
     }
 
-    // Constructor with latitude and longitude
-    public Organization(String name, String address, String website, String description, double latitude, double longitude) {
+    // Constructor with userId, latitude, and longitude
+    public Organization(String name, String address, String website, String description, double latitude, double longitude, String userId) {
         this.name = name;
         this.address = address;
         this.website = website;
         this.description = description;
         this.latitude = latitude; // Set latitude
         this.longitude = longitude; // Set longitude
+        this.userId = userId; // Set user ID of creator
         // Initialize empty lists
         this.events = new ArrayList<>();
         this.volunteer_opportunities = new ArrayList<>();
@@ -68,4 +70,8 @@ public class Organization {
 
     public double getLongitude() { return longitude; }
     public void setLongitude(double longitude) { this.longitude = longitude; }
+
+    // Getter and setter for userId
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 }

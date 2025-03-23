@@ -12,7 +12,7 @@ public class Event {
     private String time;
     private String location;
     private List<String> volunteers;  // List to hold volunteer IDs or details
-
+    private int volunteersNeeded;
 
     // Default constructor required for Firestore
     public Event() {
@@ -28,6 +28,14 @@ public class Event {
         this.time = time;
         this.location = location;
         this.volunteers = new ArrayList<>();  // Initialize the volunteers list as empty
+    }
+
+    public int getVolunteersNeeded() {
+        return volunteersNeeded;
+    }
+
+    public void setVolunteersNeeded(int volunteersNeeded) {
+        this.volunteersNeeded = volunteersNeeded;
     }
 
 
@@ -55,8 +63,3 @@ public class Event {
     public List<String> getVolunteers() { return volunteers; }
     public void setVolunteers(List<String> volunteers) { this.volunteers = volunteers; }
 }
-
-
-
-
-

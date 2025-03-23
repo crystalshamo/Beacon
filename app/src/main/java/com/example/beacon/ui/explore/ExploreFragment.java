@@ -190,7 +190,7 @@ public class ExploreFragment extends Fragment {
                             }
 
                             // Create Organization object and add it to the list
-                            Organization organization = new Organization(name, address, website, description, latitude, longitude);
+                            Organization organization = new Organization(name, address, website, description, latitude, longitude, null);
                             organizationList.add(organization);
 
                             // Add a marker on the map for each organization

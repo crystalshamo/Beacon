@@ -3,6 +3,7 @@ package com.example.beacon;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,6 +17,8 @@ import com.example.beacon.models.Event;
 import com.example.beacon.models.Organization;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.IOException;
@@ -23,6 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyOrganizationActivity extends AppCompatActivity {
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseUser user = auth.getCurrentUser();
+
 
     private ListView listView;
     private List<Organization> orgList = new ArrayList<>();
@@ -44,7 +50,14 @@ public class MyOrganizationActivity extends AppCompatActivity {
         // Load organizations on activity start
         loadOrganizations();
     }
+
     private void showAddOrganizationDialog() {
+        if (user != null) {
+            String userId = user.getUid(); // Get the unique user ID
+            Log.d("FirebaseAuth", "Logged-in user ID: " + userId);
+        } else {
+            Log.d("FirebaseAuth", "No user is logged in");
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_add_organization, null);
         builder.setView(dialogView);
@@ -91,8 +104,11 @@ public class MyOrganizationActivity extends AppCompatActivity {
                             .addOnSuccessListener(eventRef -> {
                                 String eventId = eventRef.getId();
 
+                                    String userId = user.getUid(); // Get the unique user ID
+                                    Log.d("FirebaseAuth", "Logged-in user ID: " + userId);
+
                                 // Step 3: Create the organization with full data
-                                Organization org = new Organization(name, address, website, description, latitude, longitude);
+                                Organization org = new Organization(name, address, website, description, latitude, longitude, userId);
                                 List<String> events = new ArrayList<>();
                                 events.add(eventId);
                                 org.setEvents(events);

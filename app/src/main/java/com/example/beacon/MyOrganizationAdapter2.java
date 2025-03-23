@@ -1,6 +1,5 @@
 package com.example.beacon;
 
-
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -12,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,7 +23,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Map;
 
 public class MyOrganizationAdapter2 extends ArrayAdapter<Organization> {
 
@@ -116,14 +115,18 @@ public class MyOrganizationAdapter2 extends ArrayAdapter<Organization> {
             builder.setView(dialogView);
             AlertDialog dialog = builder.create();
             dialog.show();
-            String orgId = org.getId(); // Store organization ID
+
+            String orgId = org.getId();
             ListView eventListView = dialogView.findViewById(R.id.eventListView);
             EditText nameInput = dialogView.findViewById(R.id.inputEventName);
             EditText descInput = dialogView.findViewById(R.id.inputEventDesc);
             EditText timeInput = dialogView.findViewById(R.id.inputEventTime);
             EditText locInput = dialogView.findViewById(R.id.inputEventLocation);
             EditText inputEventDate = dialogView.findViewById(R.id.inputEventDate);
+            Switch switchVolunteers = dialogView.findViewById(R.id.switchVolunteers);
             Button btnAdd = dialogView.findViewById(R.id.btnAddEvent);
+
+            final int[] volunteersNeeded = {0};
 
             inputEventDate.setFocusable(false);
             inputEventDate.setClickable(true);
@@ -143,22 +146,61 @@ public class MyOrganizationAdapter2 extends ArrayAdapter<Organization> {
                 datePickerDialog.show();
             });
 
-            ArrayList<String> eventNames = new ArrayList<>();
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, eventNames);
+            switchVolunteers.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    AlertDialog.Builder inputBuilder = new AlertDialog.Builder(getContext());
+                    inputBuilder.setTitle("Number of Volunteers Needed");
+
+                    EditText input = new EditText(getContext());
+                    input.setInputType(android.text.InputType.TYPE_CLASS_NUMBER);
+                    input.setHint("Enter a number");
+
+                    inputBuilder.setView(input);
+                    inputBuilder.setPositiveButton("OK", (dialogInterface, i) -> {
+                        String value = input.getText().toString().trim();
+                        if (!value.isEmpty()) {
+                            try {
+                                volunteersNeeded[0] = Integer.parseInt(value);
+                                Toast.makeText(getContext(), "Volunteers Needed: " + volunteersNeeded[0], Toast.LENGTH_SHORT).show();
+                            } catch (NumberFormatException e) {
+                                Toast.makeText(getContext(), "Invalid number entered", Toast.LENGTH_SHORT).show();
+                                switchVolunteers.setChecked(false);
+                            }
+                        } else {
+                            switchVolunteers.setChecked(false);
+                        }
+                    });
+                    inputBuilder.setNegativeButton("Cancel", (dialogInterface, i) -> switchVolunteers.setChecked(false));
+                    inputBuilder.show();
+                } else {
+                    volunteersNeeded[0] = 0;
+                }
+            });
+
+            ArrayList<Event> events = new ArrayList<>();
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, new ArrayList<>());
             eventListView.setAdapter(adapter);
 
             db.collection("organizations")
                     .document(org.getId())
                     .get()
                     .addOnSuccessListener(snapshot -> {
-                        List<String> eventIds = (List<String>) snapshot.get("events"); // ✅ correct type
+                        List<String> eventIds = (List<String>) snapshot.get("events");
                         if (eventIds != null) {
                             for (String eventId : eventIds) {
                                 db.collection("events").document(eventId).get()
                                         .addOnSuccessListener(eventDoc -> {
                                             if (eventDoc.exists()) {
                                                 String eventName = eventDoc.getString("name");
-                                                eventNames.add(eventName);
+                                                String description = eventDoc.getString("description");
+                                                String date = eventDoc.getString("date");
+                                                String time = eventDoc.getString("time");
+                                                String location = eventDoc.getString("location");
+
+                                                Event event = new Event(eventName, description, date, time, location);
+                                                // Optional: Load volunteer count from Firestore if stored
+                                                events.add(event);
+                                                adapter.add(eventName);
                                                 adapter.notifyDataSetChanged();
                                             }
                                         });
@@ -178,28 +220,29 @@ public class MyOrganizationAdapter2 extends ArrayAdapter<Organization> {
                     return;
                 }
 
-                // Step 1: Create the event
                 Event event = new Event(name, desc, date, time, loc);
+                event.setVolunteersNeeded(volunteersNeeded[0]);
 
-                // Step 2: Add the event to the events collection
                 db.collection("events")
                         .add(event)
                         .addOnSuccessListener(documentReference -> {
                             String eventId = documentReference.getId();
 
-                            // Step 3: Update the organization's events array with the new event ID
                             db.collection("organizations")
                                     .document(orgId)
                                     .update("events", FieldValue.arrayUnion(eventId))
                                     .addOnSuccessListener(aVoid -> {
                                         Toast.makeText(getContext(), "Event added to organization!", Toast.LENGTH_SHORT).show();
-                                        eventNames.add(name);
+                                        events.add(event);
+                                        adapter.add(name);
                                         adapter.notifyDataSetChanged();
                                         nameInput.setText("");
                                         descInput.setText("");
                                         inputEventDate.setText("");
                                         timeInput.setText("");
                                         locInput.setText("");
+                                        switchVolunteers.setChecked(false);
+                                        volunteersNeeded[0] = 0;
                                     })
                                     .addOnFailureListener(e -> {
                                         Toast.makeText(getContext(), "Failed to update organization events.", Toast.LENGTH_SHORT).show();
@@ -210,10 +253,16 @@ public class MyOrganizationAdapter2 extends ArrayAdapter<Organization> {
                         });
             });
 
-
             eventListView.setOnItemClickListener((adapterView, view1, eventPosition, id) -> {
-                String eventName = eventNames.get(eventPosition);
-                Toast.makeText(getContext(), "Selected: " + eventName, Toast.LENGTH_SHORT).show();
+                Event selectedEvent = events.get(eventPosition);
+                Intent intent = new Intent(getContext(), EventDetailsActivity.class);
+                intent.putExtra("name", selectedEvent.getName());
+                intent.putExtra("description", selectedEvent.getDescription());
+                intent.putExtra("date", selectedEvent.getDate());
+                intent.putExtra("time", selectedEvent.getTime());
+                intent.putExtra("location", selectedEvent.getLocation());
+                intent.putExtra("volunteersNeeded", selectedEvent.getVolunteersNeeded());
+                getContext().startActivity(intent);
             });
         });
 
