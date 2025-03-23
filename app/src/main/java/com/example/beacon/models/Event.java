@@ -9,7 +9,7 @@ public class Event {
     private String date;
     private String time;
     private String location;
-    private String organizationName;
+    private String orgName;
     private List<String> volunteers;
     private int volunteersNeeded;
 
@@ -18,24 +18,14 @@ public class Event {
         this.volunteers = new ArrayList<>();
     }
 
-    // Constructor without organizationName
-    public Event(String name, String description, String date, String time, String location) {
-        this.name = name;
-        this.description = description;
-        this.date = date;
-        this.time = time;
-        this.location = location;
-        this.volunteers = new ArrayList<>();
-    }
-
     // Constructor with organizationName
-    public Event(String name, String description, String date, String time, String location, String organizationName) {
+    public Event(String name, String description, String date, String time, String location, String orgName) {
         this.name = name;
         this.description = description;
         this.date = date;
         this.time = time;
         this.location = location;
-        this.organizationName = organizationName;
+        this.orgName = orgName;
         this.volunteers = new ArrayList<>();
     }
 
@@ -56,8 +46,9 @@ public class Event {
     public void setLocation(String location) { this.location = location; }
 
     public String getOrgName() {
-        return organizationName;
+        return orgName;
     }
+
 
     public int getVolunteersNeeded() { return volunteersNeeded; }
     public void setVolunteersNeeded(int volunteersNeeded) { this.volunteersNeeded = volunteersNeeded; }

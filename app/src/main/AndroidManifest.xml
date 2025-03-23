@@ -21,16 +21,17 @@
 
         <activity
             android:name=".LoginActivity"
-            android:exported="false" />
+            android:exported="true" >
 
-
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
         <activity
             android:name=".SignUpActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:exported="false">
+
         </activity>
         <activity
             android:name=".MyOrganizationActivity"
@@ -42,7 +43,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD7fhF98qH3A-FdRVAVgXRxo0_oY5F3pv0" />
+            android:value="API_KEY" />
 
         <activity android:name=".EventDetailsActivity" />
 

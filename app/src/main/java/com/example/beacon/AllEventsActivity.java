@@ -58,18 +58,6 @@ public class AllEventsActivity extends AppCompatActivity {
         Button nextMonthButton = binding.nextMonthButton;
         Button prevEventButton = binding.prevEventButton;
         Button nextEventButton = binding.nextEventButton;
-        Button btnShowCalendar = binding.btnShowCalendar;
-        View calendarContainer = binding.calendarContainer;
-
-        btnShowCalendar.setOnClickListener(v -> {
-            if (calendarContainer.getVisibility() == View.GONE) {
-                calendarContainer.setVisibility(View.VISIBLE);
-                btnShowCalendar.setText("Hide Calendar");
-            } else {
-                calendarContainer.setVisibility(View.GONE);
-                btnShowCalendar.setText("Show Calendar");
-            }
-        });
 
         calendarAdapter = new CalendarAdapter();
         calendarGridView.setAdapter(calendarAdapter);

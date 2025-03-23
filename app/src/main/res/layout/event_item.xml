@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:padding="10dp"
     android:layout_marginBottom="8dp"
-    android:background="@android:color/darker_gray">  <!-- Changed for testing -->
+    android:background="@color/colorSecondary">  <!-- Changed for testing -->
 
     <TextView
         android:id="@+id/eventName"
@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:text="Date: 2025-03-23"
         android:textSize="14sp"
-        android:textColor="@android:color/darker_gray" />
+        android:textColor="@color/colorSecondary" />
 
     <TextView
         android:id="@+id/eventDescription"

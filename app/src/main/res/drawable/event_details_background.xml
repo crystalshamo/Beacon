@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- res/drawable/event_details_background.xml -->
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <solid android:color="#F5F5F5" /> <!-- Light gray background -->
-    <corners android:radius="8dp" /> <!-- Rounded corners -->
-    <stroke android:width="1dp" android:color="#E0E0E0" /> <!-- Light border -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="#ffffff"/>
+    <!--  Light gray background  -->
+    <corners android:radius="8dp"/>
+    <!--  Rounded corners  -->
+    <stroke android:width="1dp" android:color="#E0E0E0"/>
+    <!--  Light border  -->
 </shape>

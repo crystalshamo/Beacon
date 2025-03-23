@@ -1,161 +1,38 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <!-- Button to Show Calendar -->
-    <Button
-        android:id="@+id/btnShowCalendar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Show Calendar" />
-
-    <!-- Calendar Container -->
-    <LinearLayout
-        android:id="@+id/calendarContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <!-- Month Header -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp">
-
-            <!-- Previous Month Button -->
-            <Button
-                android:id="@+id/prevMonthButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:text="&lt;" />
-
-            <!-- Month and Year Display -->
-            <TextView
-                android:id="@+id/monthYearTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="March 2025"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginHorizontal="16dp" />
-
-            <!-- Next Month Button -->
-            <Button
-                android:id="@+id/nextMonthButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:text="&gt;" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="16dp">
+    <TextView android:id="@+id/myOrgText" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center" android:text="All Events" android:paddingBottom="15dp" android:textSize="24sp" android:textStyle="bold" android:layout_marginBottom="12dp"/>
+    <!--  Calendar Container  -->
+    <LinearLayout android:id="@+id/calendarContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="visible">
+        <!--  Month Header  -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:layout_marginTop="16dp" android:layout_marginBottom="8dp">
+            <!--  Previous Month Button  -->
+            <Button android:id="@+id/prevMonthButton" android:layout_width="48dp" android:layout_height="48dp" android:text="&lt;"/>
+            <!--  Month and Year Display  -->
+            <TextView android:id="@+id/monthYearTextView" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="March 2025" android:textSize="20sp" android:textStyle="bold" android:layout_marginHorizontal="16dp"/>
+            <!--  Next Month Button  -->
+            <Button android:id="@+id/nextMonthButton" android:layout_width="48dp" android:layout_height="48dp" android:text="&lt;"/>
         </LinearLayout>
-
-        <!-- Days of Week -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Sun"
-                android:gravity="center" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Mon"
-                android:gravity="center" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Tue"
-                android:gravity="center" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Wed"
-                android:gravity="center" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Thu"
-                android:gravity="center" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Fri"
-                android:gravity="center" />
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Sat"
-                android:gravity="center" />
+        <!--  Days of Week  -->
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center">
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Sun" android:gravity="center"/>
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Mon" android:gravity="center"/>
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Tue" android:gravity="center"/>
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Wed" android:gravity="center"/>
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Thu" android:gravity="center"/>
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Fri" android:gravity="center"/>
+            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Sat" android:gravity="center"/>
         </LinearLayout>
-
-        <!-- Calendar Grid -->
-        <GridView
-            android:id="@+id/calendarGridView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:numColumns="7"
-            android:verticalSpacing="8dp"
-            android:horizontalSpacing="8dp"
-            android:padding="8dp" />
-
-        <!-- Event Details Card -->
-        <LinearLayout
-            android:id="@+id/eventDetailsCard"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/event_details_background"
-            android:padding="16dp">
-
-            <!-- Event Details Text -->
-            <TextView
-                android:id="@+id/eventDetailsTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="No events for this date"
-                android:gravity="center" />
-
-            <!-- Event Navigation Buttons -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:layout_marginTop="8dp">
-
-                <!-- Previous Event Button -->
-                <Button
-                    android:id="@+id/prevEventButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="←"
-                    android:visibility="gone" />
-
-                <!-- Next Event Button -->
-                <Button
-                    android:id="@+id/nextEventButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="→"
-                    android:layout_marginStart="16dp"
-                    android:visibility="gone" />
+        <!--  Calendar Grid  -->
+        <GridView android:id="@+id/calendarGridView" android:layout_width="match_parent" android:layout_height="wrap_content" android:numColumns="7" android:verticalSpacing="8dp" android:horizontalSpacing="8dp" android:padding="8dp"/>
+        <!--  Event Details Card  -->
+        <LinearLayout android:id="@+id/eventDetailsCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:background="@drawable/event_details_background" android:padding="16dp">
+            <!--  Event Details Text  -->
+            <TextView android:id="@+id/eventDetailsTextView" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="No events for this date" android:gravity="center"/>
+            <!--  Event Navigation Buttons  -->
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center" android:layout_marginTop="8dp">
+                <!--  Previous Event Button  -->
+                <Button android:id="@+id/prevEventButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="←" android:visibility="gone"/>
+                <!--  Next Event Button  -->
+                <Button android:id="@+id/nextEventButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="→" android:layout_marginStart="16dp" android:visibility="gone"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

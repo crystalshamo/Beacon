@@ -287,7 +287,9 @@ public class ExploreFragment extends Fragment {
                                 marker.setTag(organization); // Attach organization to the marker
                             }
                         }
+                        adapter.setOrganizations(organizationList);
                         adapter.notifyDataSetChanged();
+                        filterOrganizations("");
                     } else {
                         Log.w("ExploreFragment", "Error getting documents.", task.getException());
                     }
