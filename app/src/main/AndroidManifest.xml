@@ -37,6 +37,8 @@
             android:exported="false" />
 
         <activity android:name=".NeedsActivity" />
+        <activity android:name=".AllEventsActivity" />
+        <activity android:name=".MyEventActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.beacon.models.Event;
 import com.example.beacon.models.Organization;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -79,7 +80,6 @@ public class MyOrganizationAdapter2 extends ArrayAdapter<Organization> {
                     return;
                 }
 
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
                 db.collection("organizations")
                         .whereEqualTo("name", org.getName())
                         .get()
@@ -142,7 +142,6 @@ public class MyOrganizationAdapter2 extends ArrayAdapter<Organization> {
                             String date = (selectedMonth + 1) + "/" + selectedDay + "/" + selectedYear;
                             inputEventDate.setText(date);
                         }, year, month, day);
-
                 datePickerDialog.show();
             });
 
@@ -197,8 +196,15 @@ public class MyOrganizationAdapter2 extends ArrayAdapter<Organization> {
                                                 String time = eventDoc.getString("time");
                                                 String location = eventDoc.getString("location");
 
-                                                Event event = new Event(eventName, description, date, time, location);
-                                                // Optional: Load volunteer count from Firestore if stored
+                                                Event event = new Event(eventName, description, date, time, location, org.getName());
+                                                event.setVolunteersNeeded(eventDoc.getLong("volunteersNeeded") != null
+                                                        ? eventDoc.getLong("volunteersNeeded").intValue()
+                                                        : 0);
+                                                List<String> volunteers = (List<String>) eventDoc.get("volunteers");
+                                                if (volunteers != null) {
+                                                    event.setVolunteers(volunteers);
+                                                }
+
                                                 events.add(event);
                                                 adapter.add(eventName);
                                                 adapter.notifyDataSetChanged();
@@ -220,7 +226,7 @@ public class MyOrganizationAdapter2 extends ArrayAdapter<Organization> {
                     return;
                 }
 
-                Event event = new Event(name, desc, date, time, loc);
+                Event event = new Event(name, desc, date, time, loc, org.getName());
                 event.setVolunteersNeeded(volunteersNeeded[0]);
 
                 db.collection("events")
@@ -255,14 +261,26 @@ public class MyOrganizationAdapter2 extends ArrayAdapter<Organization> {
 
             eventListView.setOnItemClickListener((adapterView, view1, eventPosition, id) -> {
                 Event selectedEvent = events.get(eventPosition);
-                Intent intent = new Intent(getContext(), EventDetailsActivity.class);
-                intent.putExtra("name", selectedEvent.getName());
-                intent.putExtra("description", selectedEvent.getDescription());
-                intent.putExtra("date", selectedEvent.getDate());
-                intent.putExtra("time", selectedEvent.getTime());
-                intent.putExtra("location", selectedEvent.getLocation());
-                intent.putExtra("volunteersNeeded", selectedEvent.getVolunteersNeeded());
-                getContext().startActivity(intent);
+
+                db.collection("events")
+                        .whereEqualTo("name", selectedEvent.getName())
+                        .get()
+                        .addOnSuccessListener(snapshot -> {
+                            if (!snapshot.isEmpty()) {
+                                DocumentSnapshot doc = snapshot.getDocuments().get(0);
+                                Event updatedEvent = doc.toObject(Event.class);
+
+                                Intent intent = new Intent(getContext(), EventDetailsActivity.class);
+                                intent.putExtra("name", updatedEvent.getName());
+                                intent.putExtra("description", updatedEvent.getDescription());
+                                intent.putExtra("date", updatedEvent.getDate());
+                                intent.putExtra("time", updatedEvent.getTime());
+                                intent.putExtra("location", updatedEvent.getLocation());
+                                intent.putExtra("volunteersNeeded", updatedEvent.getVolunteersNeeded());
+                                intent.putStringArrayListExtra("volunteers", new ArrayList<>(updatedEvent.getVolunteers()));
+                                getContext().startActivity(intent);
+                            }
+                        });
             });
         });
 

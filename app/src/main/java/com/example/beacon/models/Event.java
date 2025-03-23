@@ -1,9 +1,7 @@
 package com.example.beacon.models;
 
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class Event {
     private String name;
@@ -11,54 +9,58 @@ public class Event {
     private String date;
     private String time;
     private String location;
-    private List<String> volunteers;  // List to hold volunteer IDs or details
+    private String organizationName;
+    private List<String> volunteers;
     private int volunteersNeeded;
 
     // Default constructor required for Firestore
     public Event() {
-        // Initialize the volunteers list as empty
         this.volunteers = new ArrayList<>();
     }
 
-
+    // Constructor without organizationName
     public Event(String name, String description, String date, String time, String location) {
         this.name = name;
         this.description = description;
         this.date = date;
         this.time = time;
         this.location = location;
-        this.volunteers = new ArrayList<>();  // Initialize the volunteers list as empty
+        this.volunteers = new ArrayList<>();
     }
 
-    public int getVolunteersNeeded() {
-        return volunteersNeeded;
+    // Constructor with organizationName
+    public Event(String name, String description, String date, String time, String location, String organizationName) {
+        this.name = name;
+        this.description = description;
+        this.date = date;
+        this.time = time;
+        this.location = location;
+        this.organizationName = organizationName;
+        this.volunteers = new ArrayList<>();
     }
-
-    public void setVolunteersNeeded(int volunteersNeeded) {
-        this.volunteersNeeded = volunteersNeeded;
-    }
-
 
     // Getters and setters
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
-
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
-
 
     public String getDate() { return date; }
     public void setDate(String date) { this.date = date; }
 
-
     public String getTime() { return time; }
     public void setTime(String time) { this.time = time; }
-
 
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
 
+    public String getOrgName() {
+        return organizationName;
+    }
+
+    public int getVolunteersNeeded() { return volunteersNeeded; }
+    public void setVolunteersNeeded(int volunteersNeeded) { this.volunteersNeeded = volunteersNeeded; }
 
     public List<String> getVolunteers() { return volunteers; }
     public void setVolunteers(List<String> volunteers) { this.volunteers = volunteers; }

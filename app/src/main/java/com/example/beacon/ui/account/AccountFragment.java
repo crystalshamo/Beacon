@@ -28,12 +28,16 @@ public class AccountFragment extends Fragment {
         binding = FragmentAccountBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        // Button click listener
+
         Button btnMyOrganization = binding.btnMyOrganization;
         btnMyOrganization.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), MyOrganizationActivity.class);
             startActivity(intent);
         });
+
+
+
+
 
         // Observe text changes
         final TextView textView = binding.textAccount;
