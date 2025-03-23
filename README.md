@@ -5,7 +5,7 @@
 
 # 📍 Beacon  
 
-**Beacon** is a mobile app designed to connect communities with local organizations, making it easier to find volunteer opportunities and community events—all in one place.  
+**Beacon** is a mobile app designed to connect communities with local organizations, making it easier to find volunteer opportunities and community events, all in one place.  
 
 ## Inspiration  
 Many community organizations rely on social media to share events and resources, making it difficult for people to find all available opportunities in one place. **Beacon** was created to solve this problem by providing a centralized platform where users can easily discover and engage with local organizations.  
